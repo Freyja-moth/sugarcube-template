@@ -1,6 +1,7 @@
 set default-list := true
 set shell := ["nu", "-c"]
 
+# Compile the project
 [arg('release', long, value = "release")]
 build release = "debug":
   mkdir target
@@ -8,7 +9,7 @@ build release = "debug":
   rm --force -r target/{{release}}/build 
   mkdir target/{{release}}/build
 
-  if (("./node_modules" | path exists) != true) { npm i }
+  npm i
 
   npx webpack --mode {{ if release == "release" { "production" } else { "development" } }}
 
@@ -20,7 +21,11 @@ build release = "debug":
 
   tweego -o target/{{release}}/index.html target/{{release}}/build
 
+# Compile the project and opens it
 [arg('release', long, value = "release")]
 run release = "debug": (build release)
   xdg-open target/{{release}}/index.html
 
+# Removes compilation artifacts
+clean:
+  rm -r target/
